@@ -1,24 +1,36 @@
-'use strict';
+const express = require('express')
+const app = express()
+
+const cors = require('cors');
+app.use(cors())
+app.use(express.json());
 
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const jwksClient = require('jwks-rsa');
+const PORT = process.env.PORT
 
-const app = express();
-app.use(cors());
+const { getDrinks, createFavorite , getFavorite ,deleteFavorite,updateFavorite} = require('./controller/drinks.controller');
+const { default: axios } = require('axios');
 
-const PORT = process.env.PORT || 3001;
 
-app.get('/test', (request, response) => {
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/drinks', { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // TODO: 
-  // STEP 1: get the jwt from the headers
-  // STEP 2. use the jsonwebtoken library to verify that it is a valid jwt
-  // jsonwebtoken dock - https://www.npmjs.com/package/jsonwebtoken
-  // STEP 3: to prove that everything is working correctly, send the opened jwt back to the front-end
+app.get('/drinks', getDrinks)
 
+// endpoints
+
+app.post('/favorite', createFavorite)
+app.get('/favorite', getFavorite)
+app.delete('/favorite/:idx', deleteFavorite)
+app.put('/favorite/:idx', updateFavorite)
+
+
+
+app.get('/',
+    function (req, res) {
+        res.send('Hello World')
+    })
+
+app.listen(PORT, () => {
+    console.log(`hello terminal ${PORT}`)
 })
-
-app.listen(PORT, () => console.log(`listening on ${PORT}`));
