@@ -51,9 +51,9 @@ const seedOwner = () => {
 }
 
 
-seedOwner();
+//seedOwner();
 
 
 
 
-module.exports = { ownerModel };
+module.exports =  ownerModel ;

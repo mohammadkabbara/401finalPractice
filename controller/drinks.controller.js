@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const { ownerModel } = require('../model/drinks.model')
+const  ownerModel = require('../model/drinks.model')
 
 const getDrinks = async (req, res) => {
     await axios.get(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=Non_Alcoholic`).then(response => {
@@ -12,34 +12,38 @@ const getDrinks = async (req, res) => {
 
 const createFavorite = async (req, res) => {
     const {
-        name: name,
-        img_path: img_path,
-        email:email
+        name,
+        img_path,
+        email
     } = req.body;
+    console.log(email);
     ownerModel.find({ email: email }, (error, data) => {
-        if (data.length > 0) {
-            console.log('item already exists');
-            res.send(data)
+        if (error) {
+            console.log(error);
         }
+
         else {
-            const newDrink = new ownerModel({
-                name: name,
-                img_path: img_path,
-                email:email
-            })
-            newDrink.save();
-            res.send(newDrink);
+            console.log(data);
+
+           data[0].ownerDrink.push({
+            name: name,
+            img_path: img_path,
+           })
+
+           data[0].save();
+            res.send( data[0].ownerDrink);
         }
     })
 }
 
 const getFavorite = async (req, res) => {
+    const email=req.query.email
     ownerModel.find({email:email}, (error, data) => {
         if (error) {
             console.log(error)
         }
         else {
-            res.send(data);
+            res.send(data[0].ownerDrink);
         }
     })
 }
@@ -47,40 +51,42 @@ const getFavorite = async (req, res) => {
 const deleteFavorite = async (req, res) => {
     const idx = req.params.idx
     const { email } = req.query;
+    console.log(email);
     ownerModel.find({email:email}, (error, data) => {
         if (error) {
             console.log(error)
         }
-        else {
-            data[idx].remove()
-            ownerModel.find({email:email}, (error, data) => {
-                if (error) {
-                    console.log(error)
-                }
+        
                 else {
-                    res.send(data);
+                    data[0].ownerDrink.splice(idx,1) 
+                    data[0].save();
+                    res.send(data[0].ownerDrink);
                 }
             })
         }
-    })
-}
+
 
 const updateFavorite = async (req, res) =>{
     const idx = req.params.idx
     const {
-        name: name,
-        img_path: img_path,
-        email:email
+        name,
+        img_path,
+        email
     } = req.body;
-    ownerModel.find({email:email}, (error, data) => {
+    ownerModel.findOne({email:email}, (error, data) => {
+
+
         if (error) {
             console.log(error)
         }
         else {
-            data[idx].name=name;
-            data[idx].img_path=img_path;
-            data[idx].save();
-            res.send(data)
+            data.ownerDrink.splice(idx,1,{
+                name: name,
+                img_path: img_path
+            })
+            
+            data[0].save();
+            res.send(data[0].ownerDrink)
         }
     })
 }
