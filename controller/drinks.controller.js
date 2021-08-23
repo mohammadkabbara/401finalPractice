@@ -73,6 +73,7 @@ const updateFavorite = async (req, res) =>{
         img_path,
         email
     } = req.body;
+    console.log(email);
     ownerModel.findOne({email:email}, (error, data) => {
 
 
@@ -85,8 +86,8 @@ const updateFavorite = async (req, res) =>{
                 img_path: img_path
             })
             
-            data[0].save();
-            res.send(data[0].ownerDrink)
+            data.save();
+            res.send(data.ownerDrink)
         }
     })
 }

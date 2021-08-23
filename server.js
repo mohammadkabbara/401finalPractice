@@ -13,7 +13,7 @@ const { default: axios } = require('axios');
 
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/drinks', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.get('/drinks', getDrinks)
 
